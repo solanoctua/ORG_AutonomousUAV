@@ -13,4 +13,4 @@
 
 FPV components are used for testing, troubleshooting and safety purposes only.
 
-![ArrowDirection](https://github.com/solanoctua/ORG_AutonomousUAV/ArrowDirection.png?raw=true)
+![ArrowDirection](https://github.com/solanoctua/ORG_AutonomousUAV/blob/main/ArrowDirection.png?raw=true)
