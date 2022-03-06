@@ -9,7 +9,7 @@
 | GPS: | http://www.mateksys.com/?portfolio=m9n-f4 |
 | ESC:     | Tekko32 F3 45A 4 In 1 Blheli 32 3-6S Brushless ESC      | 
 | Motors:  |  iflight XING 2450KV Brushless Motor x4     | 
-| Cameras:     | -For landing: https://www.waveshare.com/imx335-5mp-usb-camera-a.htm (auto focus version recommended)      -For object avoidance and mapping: https://www.waveshare.com/imx219-160-camera.htm x2       | 
+| Cameras:     | -For landing: https://www.waveshare.com/imx335-5mp-usb-camera-a.htm    -For object avoidance and mapping: https://www.waveshare.com/imx219-160-camera.htm x2       | 
 
 FPV components are used for testing, troubleshooting and safety purposes only.
 ![Seeker](https://github.com/solanoctua/ORG_AutonomousUAV/blob/main/Seeker.jpg?raw=true)
