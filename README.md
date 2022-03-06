@@ -12,5 +12,5 @@
 | Cameras:     | -For landing: https://www.waveshare.com/imx335-5mp-usb-camera-a.htm (auto focus version recommended)      -For object avoidance and mapping: https://www.waveshare.com/imx219-160-camera.htm x2       | 
 
 FPV components are used for testing, troubleshooting and safety purposes only.
-
+![Seeker](https://github.com/solanoctua/ORG_AutonomousUAV/blob/main/Seeker.png?raw=true)
 ![ArrowDirection](https://github.com/solanoctua/ORG_AutonomousUAV/blob/main/ArrowDirection.png?raw=true)
