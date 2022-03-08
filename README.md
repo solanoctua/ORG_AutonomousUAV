@@ -13,4 +13,8 @@
 
 FPV components are used for testing, troubleshooting and safety purposes only.
 ![Seeker](https://github.com/solanoctua/ORG_AutonomousUAV/blob/main/Seeker.jpg?raw=true)
-![ArrowDirection](https://github.com/solanoctua/ORG_AutonomousUAV/blob/main/ArrowDirection.png?raw=true)
+<p float="left">
+<img src="https://github.com/solanoctua/ORG_AutonomousUAV/blob/main/ArrowDirection1.png" width="330" height="330">
+<img src="https://github.com/solanoctua/ORG_AutonomousUAV/blob/main/ArrowDirection2.png" width="330" height="330">
+<img src="https://github.com/solanoctua/ORG_AutonomousUAV/blob/main/ArrowDirection3.png" width="330" height="330">
+</p>
