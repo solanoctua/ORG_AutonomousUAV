@@ -10,6 +10,36 @@ def distance_between_points(point1, point2):
 def nothing(x):
     pass
 
+def findPointer(points):
+    temp = []
+    for point1 in points:
+        for point2 in points:
+            distance = int(distance_between_points(point1, point2))
+            temp.append((distance,point1,point2))
+            
+    #print("sorted: ",sorted(temp,key=lambda x: (x[0]),reverse=True))
+    sortedbydistance = sorted(temp,key=lambda x: (x[0]),reverse=True)
+    special_points = []
+    for x in sortedbydistance[0:3]:
+        if x[1] not in special_points:
+            special_points.append(x[1])
+        if x[2] not in special_points:
+            special_points.append(x[2])
+    #print("specials: ",special_points)
+
+    mean = ((special_points[0][0]+special_points[1][0]+special_points[2][0])//3,(special_points[0][1]+special_points[1][1]+special_points[2][1])//3)
+    max = 0
+    for point in special_points:
+        d = distance_between_points(point,mean)
+        if d > max :
+            max = d
+            pointer = point
+    special_points.remove(pointer)
+    special_points.insert(0,pointer)
+    return special_points
+    
+
+          
 """
 cv2.namedWindow("ColorTrackbars")
 cv2.createTrackbar("min - H", "ColorTrackbars", 0, 179, nothing)
@@ -30,13 +60,15 @@ prev_frame_time = 0
 new_frame_time = 0
 if cam.isOpened():
     ret,frame = cam.read()
+    frame_width, frame_height = (640,640)
+    #output = cv2.VideoWriter("output.avi", cv2.VideoWriter_fourcc('M','J','P','G'), 20, (frame_width, frame_height)) #https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html
 else: 
     ret = False
 while ret :
     ret,frame = cam.read()
     frame = cv2.imread("Seeker/TargetImages/arrow1.png")
-    frame_width, frame_height = (640,640)
     frame = cv2.resize(frame,(frame_width, frame_height ))
+    
     #frame =cv2.flip(frame,-1)
     center_frame = (frame_width//2,frame_height//2)
     blurred = cv2.GaussianBlur(frame,(3,3),0)
@@ -86,10 +118,28 @@ while ret :
                 pass
                 
             cv2.drawContours(frame, contour, -1, (255,0,0), 15, lineType = cv2.FILLED)
-            # Find pointer(sharp point of the arrow) 
+            # To find Arrow direction, first extract contour points
             points = contour.ravel()
-            pointer = (int(points[0]), int(points[1]))
-            cv2.circle(frame, pointer, 5, (0,0,255),-1)
+            temp = []
+            Points = []
+            for i in range (0,len(points)):
+                temp.append(points[i])
+                if i%2 == 1:
+                    Points.append(temp)
+                    temp = []
+                else: 
+                    continue
+        
+            specials = findPointer(Points)
+            middle = ((specials[1][0] + specials[2][0])//2, (specials[1][1] + specials[2][1])//2)
+            pointer = (specials[0][0], specials[0][1])
+            
+            cv2.circle(frame, (specials[0][0],specials[0][1]), 4, (0,0,255),-1)
+            cv2.circle(frame, (specials[1][0],specials[1][1]), 4, (0,255,255),-1)
+            cv2.circle(frame, (specials[2][0],specials[2][1]), 4, (0,255,255),-1)
+            
+            #pointer = (int(points[0]), int(points[1]))
+            #cv2.circle(frame, pointer, 5, (0,255,255),-1)
             # Find center of the contour
             moment = cv2.moments(contour) # To find the center of the contour, we use cv2.moment
             (x_contour, y_contour) = (moment['m10'] / (moment['m00'] + 1e-5), moment['m01'] / (moment['m00'] + 1e-5)) # calculate center of the contour
@@ -100,34 +150,62 @@ while ret :
             #cv2.drawContours(mask_arrow, contour, -1, (0,0,0), 15, lineType = cv2.FILLED)
             cv2.polylines(mask_arrow, [contour], True, (0,255,255), 2)#ConvexHullPoints
             # Drawing lines for angle calculation (for visual purposes only)
-            cv2.line(frame, center_contour, pointer,(255,0,255),1)
+            cv2.line(frame, middle, pointer,(255,0,255),1)
+            #cv2.line(frame, center_contour, pointer,(255,0,255),1)
             cv2.line(frame, center_frame, center_contour,(0,0,255),1)
             # Find angle of the arrow
-            atan = math.atan2(pointer[1]-center_contour[1], pointer[0]-center_contour[0])
+            #atan = math.atan2(center_contour[1] - pointer[1], center_contour[0] - pointer[0])
+            
+            atan = math.atan2(middle[0] - pointer[0], middle[1] - pointer[1])
             angle_arrow = math.degrees(atan)
-            angle_arrow = int(90+angle_arrow)
-            # Angle of the line connecting center of contour to the center of the frame
-            atan = math.atan2(center_frame[1]-center_contour[1], center_frame[0]-center_contour[0])
-            angle_target = math.degrees(atan)
-            angle_target = int(angle_target - 90)
-            color = (0,0,255)
-            if 0 <= np.abs(angle_arrow) and np.abs(angle_arrow) <= 90:
-                cv2.putText(frame, "FORWARD", (frame_width - 100, 35) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
-            if 90 < np.abs(angle_arrow):
-                cv2.putText(frame, "BACKWARD", (frame_width - 100, 35) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
-            if angle_arrow < 0:
-                cv2.putText(frame, "LEFT", (frame_width - 100, 55) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            angle_arrow = int(angle_arrow)
             if angle_arrow > 0:
-                cv2.putText(frame, "RIGHT", (frame_width - 100, 55) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+                if angle_arrow > 90:
+                    angle_arrow = 270-(angle_arrow-90)
+                else:
+                    angle_arrow = 360 - angle_arrow
+            else:
+                angle_arrow *= -1
 
-            cv2.putText(frame, "{}*".format(angle_arrow), (frame_width - 100, 15) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
-            cv2.putText(frame, "{}*".format(angle_target-angle_arrow), center_frame , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            # Angle of the line connecting center of contour to the center of the frame
+            atan = math.atan2(center_frame[1] - center_contour[1], center_frame[0] - center_contour[0])
+            angle_target = math.degrees(atan)
+            angle_target = int(angle_target)
+            if angle_target > 0:
+                if angle_target > 90:
+                    angle_target -= 90
+                else:
+                    angle_target += 270
+            else:
+                angle_target += 270
+
+            color = (0,0,255)
+            """
+            if angle_arrow > 135 and angle_arrow < 225:
+                cv2.putText(frame, "BACKWARD", (frame_width - 100, 35) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            if angle_arrow >= 225 and angle_arrow <= 315:
+                cv2.putText(frame, "LEFT", (frame_width - 100, 55) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            if angle_arrow >= 45 and angle_arrow <= 135:
+                cv2.putText(frame, "RIGHT", (frame_width - 100, 55) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            if  angle_arrow < 45 or angle_arrow > 315:
+                cv2.putText(frame, "FORWARD", (frame_width - 100, 35) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            """
+            if angle_arrow > 90 and angle_arrow < 270:
+                cv2.putText(frame, "BACKWARD", (frame_width - 100, 35) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            if angle_arrow > 180 and angle_arrow < 360:
+                cv2.putText(frame, "LEFT", (frame_width - 100, 55) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            if angle_arrow >0 and angle_arrow < 180:
+                cv2.putText(frame, "RIGHT", (frame_width - 100, 55) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            if  angle_arrow < 90 or angle_arrow > 270:
+                cv2.putText(frame, "FORWARD", (frame_width - 100, 35) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            cv2.putText(frame, "Arrow Direction: {}*".format(angle_arrow), (frame_width - 200, 15) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+            cv2.putText(frame, "{}*".format(angle_target), center_frame , cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
             # If arrow inside the locking_circle, then locking_circle becomes green
             if distance_between_points(center_contour, center_frame) < target_lock_radius:
-                cv2.circle(blank, center_frame, target_lock_radius,(0,255,0), cv2.FILLED)
+                cv2.circle(blank, center_frame, target_lock_radius, (0,255,0), cv2.FILLED)
                 alpha = 0.4
                 beta = (1.0 - alpha)
-                cv2.addWeighted(blank, alpha, frame, beta, 0.0,frame) # to make rectangle transparent
+                cv2.addWeighted(blank, alpha, frame, beta, 0.0, frame) # to make rectangle transparent
 
             kernel = np.ones((5,5), np.uint8)
             mask_color = cv2.erode(mask_color, kernel, iterations=1)
@@ -135,17 +213,21 @@ while ret :
             ret, mask_color = cv2.threshold(np.array(mask_color), 125, 255, cv2.THRESH_BINARY_INV)
             #print("text: ",pytesseract.image_to_string(mask_color, config='--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789')) 
             #print("text: ",pytesseract.image_to_string(mask_color, config='digits'))
-            
-    cv2.imshow("mask_arrow",mask_arrow)
-    cv2.imshow("realTimeCamera",frame)    
-    cv2.imshow("mask_color",mask_color)
+            text = pytesseract.image_to_string(mask_color, lang='eng',config='--psm 6')
+            print("text: ",text)
+    #output.write(frame)    
+    cv2.imshow("mask_arrow", mask_arrow)
+    cv2.imshow("realTimeCamera", frame)    
+    cv2.imshow("mask_color", mask_color)
     
     #cv2.imshow("Blurred",blurred)
     key=cv2.waitKey(1)
     if key==27:
         break
 cv2.destroyAllWindows()
+output.release()
 cam.release()
+
 
 
 

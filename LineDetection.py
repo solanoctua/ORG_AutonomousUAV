@@ -24,7 +24,7 @@ else:
 while ret :
     ret,frame = cam.read()
     
-    frame = cv2.imread("Seeker/TargetImages/line2.png")
+    frame = cv2.imread("Seeker/TargetImages/line1.png")
     frame_width, frame_height = (480,480)
     frame = cv2.resize(frame,(frame_width, frame_height))
     #frame =cv2.flip(frame,-1)
@@ -43,8 +43,6 @@ while ret :
     cv2.line(frame,(0,int(frame_height/2 )),(int(frame_width),int(frame_height/2 )),(255,0,0),1)
     
 
-    
-    
     min_h = cv2.getTrackbarPos("min - H", "ColorTrackbars")
     min_s = cv2.getTrackbarPos("min - S", "ColorTrackbars")
     min_v = cv2.getTrackbarPos("min - V", "ColorTrackbars")
@@ -65,6 +63,7 @@ while ret :
         if cv2.contourArea(contour) >= 500: # If area is big enough, find its center etc.
             contour = cv2.approxPolyDP(contour, 10, closed=True)
             cv2.drawContours(frame, contour, -1, (255,255,0), 5, lineType = cv2.FILLED)
+            print("len(contour): ",len(contour))
             cv2.polylines(frame, [contour], True, (0,255,255), 2)
             """
             x,y,w,h = cv2.boundingRect(contour)
