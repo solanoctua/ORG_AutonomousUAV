@@ -238,7 +238,8 @@ def send_body_ned_velocity(velocity_x, velocity_y, velocity_z, duration=0):
         time.sleep(1)
 
 time.sleep(20)
-vehicle = connect('/dev/ttyS0', baud=921600)
+#vehicle = connect('/dev/ttyS0', baud=921600)
+vehicle = connect('/dev/ttyAMA0', baud=921600)
 
 # Get some vehicle attributes (state)
 print (" Get some vehicle attribute values:")
