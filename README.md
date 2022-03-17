@@ -1,4 +1,5 @@
 # ORG_AutonomousUAV
+run ORG_mission.py
 | Quadcopter Specifications  |  | 
 | :---         | :---           | 
 | Frame:   | 7 inch true X configuration   | 
