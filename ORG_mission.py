@@ -271,7 +271,7 @@ while True:
             ret,frame = cam.read()
             prev_frame_time = 0
             new_frame_time = 0
-            output = cv2.VideoWriter("output.avi", cv2.VideoWriter_fourcc('M','J','P','G'), 20, (frame_width, frame_height)) #https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html
+            output = cv2.VideoWriter("output.avi", cv2.VideoWriter_fourcc('M','J','P','G'), 5, (frame_width, frame_height)) #https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html
         else: 
             ret = False
         while ret :
