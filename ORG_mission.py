@@ -503,5 +503,8 @@ while True:
         output.release()
         cam.release()
     else:
+        print("Waiting for command")
         print ("Channel values from RC Tx:", vehicle.channels)
+        print("Command Channel(6): ",vehicle.channels['6'])
+        time.sleep(3)
         
