@@ -127,7 +127,7 @@ def searchForText(contour, tolerance):
     cv2.drawContours(frame,[ROI],0,(0,0,255),2)
     text = text.replace(" ", "")
     #print("text: ",text)
-    print("len(text[]): ",len(text[:-1]))
+    #print("len(text[]): ",len(text[:-1]))
     cv2.imshow("text", text_area)
     return text
 
@@ -301,7 +301,7 @@ while ret :
                             except:
                                 print("cannot convert the text to int")
                             if text:
-                                print("found",text) 
+                                #print("found",text) 
                                 cv2.putText(frame, "arrow {}".format(text), (10, frame_height-35) , cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0,0,255), 2)
                                 
                                 distance = text/100 # in meters
